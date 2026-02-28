@@ -1,26 +1,82 @@
 import React from 'react';
-import logo from './logo.svg';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import './App.css';
+import { BookCheckoutPage } from './layouts/BookCheckoutPage/BookCheckoutPage';
+import { HomePage } from './layouts/HomePage/HomePage';
+import { Footer } from './layouts/NavbarAndFooter/Footer';
+import { Navbar } from './layouts/NavbarAndFooter/Navbar';
+import { SearchBooksPage } from './layouts/SearchBooksPage/SearchBooksPage';
+import { ReviewListPage } from './layouts/BookCheckoutPage/ReviewListPage/ReviewListPage';
+import { ShelfPage } from './layouts/ShelfPage/ShelfPage';
+import { MessagesPage } from './layouts/MessagesPage/MessagesPage';
+import { ManageLibraryPage } from './layouts/ManageLibraryPage/ManageLibraryPage';
+import { auth0Config } from './lib/auth0Config';
 
-function App() {
+import { Auth0Provider, withAuthenticationRequired} from '@auth0/auth0-react';
+import { LoginPage } from './Auth/LoginPage';
+
+
+
+const Auth0ProviderWithHistory = ({ children }: { children: React.ReactNode }) => {
+  const history = useHistory();
+
+  const onRedirectCallback = (appState: any) => {
+    history.push(appState?.returnTo || "/home");
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <Auth0Provider
+      domain={auth0Config.domain}
+      clientId={auth0Config.clientId}
+      authorizationParams={{
+        redirect_uri: auth0Config.redirectUri,
+        audience: auth0Config.audience,
+        scope: auth0Config.scope,
+      }} 
+       onRedirectCallback={onRedirectCallback}
+    >
+      {children}
+      {/* console.log(auth0Config.domain); */}
+    </Auth0Provider>
+    
+  );
+};
+
+const SecureRoute = ({ component, path, ...args }: { component: React.ComponentType<any>, path: string }) => (
+  <Route path={path} component={withAuthenticationRequired(component)} {...args} />
+);
+
+export const App = () => {
+
+  return (
+    <div className='d-flex flex-column min-vh-100'>
+      <Auth0ProviderWithHistory>
+      <Navbar />
+      <div className='flex-grow-1'>
+        <Switch>
+          <Route path='/' exact>
+            <Redirect to='/home' />
+          </Route>
+          <Route path='/home'>
+            <HomePage />
+          </Route>
+          <Route path='/search'>
+            <SearchBooksPage />
+          </Route>
+          <Route path='/reviewlist/:bookId'>
+            <ReviewListPage/>
+          </Route>
+          <Route path='/checkout/:bookId'>
+            <BookCheckoutPage/>
+          </Route>
+          <Route path='/login' render={() => <LoginPage />} />
+          <SecureRoute path='/shelf' component={ShelfPage} />
+          <SecureRoute path='/messages' component={MessagesPage} />
+          <SecureRoute path='/admin' component={ManageLibraryPage} />
+        </Switch>
+      </div>
+      <Footer />
+      </Auth0ProviderWithHistory>
     </div>
   );
 }
-
-export default App;
