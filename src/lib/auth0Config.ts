@@ -6,4 +6,3 @@ export const auth0Config = {
  scope: 'openid profile email'
 }
 
-// hello
