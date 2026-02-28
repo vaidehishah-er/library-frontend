@@ -5,3 +5,5 @@ export const auth0Config = {
  redirectUri: window.location.origin+"/callback",
  scope: 'openid profile email'
 }
+
+// hello
