@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -42,7 +42,7 @@ console.log("isAuthenticated: ", isAuthenticated);
   return (
     <nav className='navbar navbar-expand-lg navbar-dark main-color py-3'>
       <div className='container-fluid'>
-        <span className='navbar-brand'>Luv 2 Read</span>
+        <span className='navbar-brand'>&#128218; Love to Read</span>
         <button className='navbar-toggler' type='button'
           data-bs-toggle='collapse' data-bs-target='#navbarNavDropdown'
           aria-controls='navbarNavDropdown' aria-expanded='false'

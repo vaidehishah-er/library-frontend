@@ -9,14 +9,14 @@ export const CheckoutAndReviewBox: React.FC<{ book: BookModel | undefined, mobil
     function buttonRender() {
         if (props.isAuthenticated) {
             if (!props.isCheckedOut && props.currentLoansCount < 5) {
-                return (<button onClick={() => props.checkoutBook()} className='btn btn-success btn-lg'>Checkout</button>)
+                return (<button onClick={() => props.checkoutBook()} className='btn hero-btn-primary btn-lg w-100'>Checkout</button>)
             } else if (props.isCheckedOut) {
                 return (<p><b>Book checked out. Enjoy!</b></p>)
             } else if (!props.isCheckedOut) {
                 return (<p className='text-danger'>Too many books checked out.</p>)
             }
         }
-        return (<Link to={'/login'} className='btn btn-success btn-lg'>Sign in</Link>)
+        return (<Link to={'/login'} className='btn hero-btn-primary btn-lg w-100'>Sign In to Checkout</Link>)
     }
 
     function reviewRender() {
@@ -42,41 +42,28 @@ export const CheckoutAndReviewBox: React.FC<{ book: BookModel | undefined, mobil
     }
 
     return (
-        <div className={props.mobile ? 'card d-flex mt-5' : 'card col-3 container d-flex mb-5'}>
-            <div className='card-body container'>
-                <div className='mt-3'>
-                    <p>
-                        <b>{props.currentLoansCount}/5 </b>
-                        books checked out
-                    </p>
-                    <hr />
-                    {props.book && props.book.copiesAvailable && props.book.copiesAvailable > 0 ?
-                        <h4 className='text-success'>
-                            Available
-                        </h4>
-                        :
-                        <h4 className='text-danger'>
-                            Wait List
-                        </h4>
-                    }
-                    <div className='row'>
-                        <p className='col-6 lead'>
-                            <b>{props.book?.copies} </b>
-                            copies
-                        </p>
-                        <p className='col-6 lead'>
-                            <b>{props.book?.copiesAvailable} </b>
-                            available
-                        </p>
-                    </div>
-                </div>
-                {buttonRender()}
-                <hr />
-                <p className='mt-3'>
-                    This number can change until placing order has been complete.
-                </p>
-                {reviewRender()}
+        <div className={props.mobile ? 'checkout-info-box mt-4' : 'checkout-info-box col-3'}>
+            <p className='checkout-loans-bar'>
+                <strong>{props.currentLoansCount}/5</strong> books checked out
+            </p>
+            <hr className='checkout-divider' style={{margin: '0.75rem 0 1rem'}} />
+            <div className={`checkout-availability ${props.book && props.book.copiesAvailable && props.book.copiesAvailable > 0 ? 'available' : 'waitlist'}`}>
+                {props.book && props.book.copiesAvailable && props.book.copiesAvailable > 0 ? 'Available' : 'Wait List'}
             </div>
+            <div className='checkout-stats'>
+                <div className='checkout-stat'>
+                    <span className='checkout-stat-value'>{props.book?.copies}</span>
+                    <span className='checkout-stat-label'>Total Copies</span>
+                </div>
+                <div className='checkout-stat'>
+                    <span className='checkout-stat-value'>{props.book?.copiesAvailable}</span>
+                    <span className='checkout-stat-label'>Available</span>
+                </div>
+            </div>
+            {buttonRender()}
+            <p className='checkout-note'>Availability may change until checkout is complete.</p>
+            <hr className='checkout-divider' style={{margin: '1rem 0'}} />
+            {reviewRender()}
         </div>
     );
 }

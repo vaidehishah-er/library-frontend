@@ -2,8 +2,8 @@ import { useState } from "react";
 import MessageModel from "../../../models/MessageModel";
 
 export const AdminMessage: React.FC<{
- message: MessageModel,
- submitResponseToQuestion: any
+    message: MessageModel,
+    submitResponseToQuestion: any
 }> = (props) => {
 
     const [displayWarning, setDisplayWarning] = useState(false);
@@ -19,32 +19,37 @@ export const AdminMessage: React.FC<{
     }
 
     return (
-        <div key={props.message.id}>
-            <div className='card mt-2 shadow p-3 bg-body rounded'>
-                <h5>Case #{props.message.id}: {props.message.title}</h5>
-                <h6>{props.message.userEmail}</h6>
-                <p>{props.message.question}</p>
-                <hr/>
-                <div>
-                    <h5>Response: </h5>
-                    <form action="PUT">
-                        {displayWarning && 
-                            <div className='alert alert-danger' role='alert'>
-                                All fields must be filled out.
-                            </div>
-                        }
-                        <div className='col-md-12 mb-3'>
-                            <label className='form-label'> Description </label>
-                            <textarea className='form-control' id='exampleFormControlTextarea1' rows={3} 
-                                onChange={e => setResponse(e.target.value)} value={response}></textarea>
-                        </div>
-                        <div>
-                            <button type='button' className='btn btn-primary mt-3' onClick={submitBtn}>
-                                Submit Response
-                            </button>
-                        </div>
-                    </form>
+        <div className='admin-msg-card'>
+            <div className='admin-msg-header'>
+                <div className='admin-msg-meta'>
+                    <span className='admin-msg-case'>Case #{props.message.id}</span>
+                    <span className='admin-msg-email'>{props.message.userEmail}</span>
                 </div>
+                <h5 className='admin-msg-title'>{props.message.title}</h5>
+                <p className='admin-msg-question'>{props.message.question}</p>
+            </div>
+
+            <div className='admin-msg-response'>
+                <div className='admin-msg-response-label'>
+                    <span className='section-label'>Your Response</span>
+                </div>
+                {displayWarning &&
+                    <div className='alert alert-danger' role='alert'>
+                        Response cannot be empty
+                    </div>
+                }
+                <div className='mb-3'>
+                    <textarea
+                        className='form-control'
+                        rows={3}
+                        placeholder='Write your response to the member...'
+                        onChange={e => setResponse(e.target.value)}
+                        value={response}
+                    ></textarea>
+                </div>
+                <button type='button' className='btn hero-btn-primary' onClick={submitBtn}>
+                    Submit Response
+                </button>
             </div>
         </div>
     );

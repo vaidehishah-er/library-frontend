@@ -6,39 +6,31 @@ import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const HistoryPage = () => {
-    
+
     const { isAuthenticated, user } = useAuth0();
     const [isLoadingHistory, setIsLoadingHistory] = useState(true);
     const [httpError, setHttpError] = useState(null);
-
-    // Histories
     const [histories, setHistories] = useState<HistoryModel[]>([]);
-
-    // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         const fetchUserHistory = async () => {
             if (isAuthenticated) {
-                const url = `http://localhost:8080/api/histories/search/findBooksByUserEmail?userEmail=${user?.email}&page=${currentPage - 1}&size=5`;
+                const url = `${process.env.REACT_APP_API}/histories/search/findBooksByUserEmail?userEmail=${user?.email}&page=${currentPage - 1}&size=5`;
                 const requestOptions = {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 };
                 const historyResponse = await fetch(url, requestOptions);
                 if (!historyResponse.ok) {
                     throw new Error('Something went wrong!');
                 }
                 const historyResponseJson = await historyResponse.json();
-
                 setHistories(historyResponseJson._embedded.histories);
                 setTotalPages(historyResponseJson.page.totalPages);
             }
             setIsLoadingHistory(false);
-
         }
         fetchUserHistory().catch((error: any) => {
             setIsLoadingHistory(false);
@@ -47,9 +39,7 @@ export const HistoryPage = () => {
     }, [isAuthenticated, user, currentPage]);
 
     if (isLoadingHistory) {
-        return (
-            <SpinnerLoading/>
-        );
+        return <SpinnerLoading />;
     }
 
     if (httpError) {
@@ -61,60 +51,62 @@ export const HistoryPage = () => {
     }
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-    
-    return(
-        <div className='mt-2'>
-            {histories.length > 0 ? 
-            <>
-                <h5>Recent History:</h5>
 
-                {histories.map(history => (
-                    <div key={history.id}>
-                        <div className='card mt-3 shadow p-3 mb-3 bg-body rounded'>
-                            <div className='row g-0'>
-                                <div className='col-md-2'>
-                                    <div className='d-none d-lg-block'>
-                                        {history.img ? 
-                                            <img src={history.img} width='123' height='196' alt='Book' />
-                                            :
-                                            <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')} 
-                                                width='123' height='196' alt='Default'/>
-                                        }
+    return (
+        <div className='mt-4'>
+            {histories.length > 0 ?
+                <>
+                    <h5 className='history-section-title'>
+                        Reading History
+                    </h5>
+                    {histories.map(history => (
+                        <div className='history-card' key={history.id}>
+                            <div className='d-none d-lg-block'>
+                                {history.img ?
+                                    <img src={history.img} width='100' height='160' alt='Book' />
+                                    :
+                                    <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')}
+                                        width='100' height='160' alt='Book' />
+                                }
+                            </div>
+                            <div className='d-lg-none d-flex justify-content-center'>
+                                {history.img ?
+                                    <img src={history.img} width='100' height='160' alt='Book' />
+                                    :
+                                    <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')}
+                                        width='100' height='160' alt='Book' />
+                                }
+                            </div>
+                            <div className='flex-grow-1'>
+                                <p className='history-book-author'>{history.author}</p>
+                                <h5 className='history-book-title'>{history.title}</h5>
+                                <p className='history-book-desc'>{history.description}</p>
+                                <div className='history-dates'>
+                                    <div className='history-date-item'>
+                                        <span className='history-date-label'>Checked Out</span>
+                                        <span className='history-date-value'>{history.checkoutDate}</span>
                                     </div>
-                                    <div className='d-lg-none d-flex justify-content-center align-items-center'>
-                                        {history.img ? 
-                                            <img src={history.img} width='123' height='196' alt='Book' />
-                                            :
-                                            <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')} 
-                                                width='123' height='196' alt='Default'/>
-                                        }
+                                    <div className='history-date-item'>
+                                        <span className='history-date-label'>Returned</span>
+                                        <span className='history-date-value'>{history.returnedDate}</span>
                                     </div>
-                                </div>
-                                <div className='col'>
-                                        <div className='card-body'>
-                                            <h5 className='card-title'> {history.author} </h5>
-                                            <h4>{history.title}</h4>
-                                            <p className='card-text'>{history.description}</p>
-                                            <hr/>
-                                            <p className='card-text'> Checked out on: {history.checkoutDate}</p>
-                                            <p className='card-text'> Returned on: {history.returnedDate}</p>
-                                        </div>
                                 </div>
                             </div>
                         </div>
-                        <hr/>
-                    </div>
-                ))}
-            </>
-            :
-            <>
-                <h3 className='mt-3'>Currently no history: </h3>
-                <Link className='btn btn-primary' to={'search'}>
-                    Search for new book
-                </Link>
-            </>
-        }
-            {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate}/>}
+                    ))}
+                </>
+                :
+                <div className='empty-shelf'>
+                    <h3>No reading history yet</h3>
+                    <p className='text-muted mb-4'>Books you've returned will appear here.</p>
+                    <Link className='btn hero-btn-primary btn-lg' to='search'>
+                        Find a Book
+                    </Link>
+                </div>
+            }
+            {totalPages > 1 &&
+                <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />
+            }
         </div>
     );
 }

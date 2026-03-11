@@ -38,7 +38,7 @@ export const BookCheckoutPage = () => {
 
     useEffect(() => {
         const fetchBook = async () => {
-            const baseUrl: string = `http://localhost:8080/api/books/${bookId}`;
+            const baseUrl: string = `${process.env.REACT_APP_API}/books/${bookId}`;
 
             const response = await fetch(baseUrl);
 
@@ -71,7 +71,7 @@ export const BookCheckoutPage = () => {
 
     useEffect(() => {
         const fetchBookReviews = async () => {
-            const reviewUrl: string = `http://localhost:8080/api/reviews/search/findByBookId?bookId=${bookId}`;
+            const reviewUrl: string = `${process.env.REACT_APP_API}/reviews/search/findByBookId?bookId=${bookId}`;
 
             const responseReviews = await fetch(reviewUrl);
 
@@ -118,7 +118,7 @@ export const BookCheckoutPage = () => {
         const fetchUserReviewBook = async () => {
             if (isAuthenticated) {
                 const accessToken = await getAccessTokenSilently();
-                const url = `http://localhost:8080/api/reviews/secure/user/book?bookId=${bookId}`;
+                const url = `${process.env.REACT_APP_API}/reviews/secure/user/book?bookId=${bookId}`;
                 const requestOptions = {
                     method: 'GET',
                     headers: {
@@ -145,7 +145,7 @@ export const BookCheckoutPage = () => {
         const fetchUserCurrentLoansCount = async () => {
             if (isAuthenticated) {
                 const accessToken = await getAccessTokenSilently();
-                const url = `http://localhost:8080/api/books/secure/currentloans/count`;
+                const url = `${process.env.REACT_APP_API}/books/secure/currentloans/count`;
                 const requestOptions = {
                     method: 'GET',
                     headers: { 
@@ -172,7 +172,7 @@ export const BookCheckoutPage = () => {
         const fetchUserCheckedOutBook = async () => {
             if (isAuthenticated) {
                 const accessToken = await getAccessTokenSilently();
-                const url = `http://localhost:8080/api/books/secure/ischeckedout/byuser?bookId=${bookId}`;
+                const url = `${process.env.REACT_APP_API}/books/secure/ischeckedout/byuser?bookId=${bookId}`;
                 const requestOptions = {
                     method: 'GET',
                     headers: {
@@ -213,7 +213,7 @@ export const BookCheckoutPage = () => {
 
     async function checkoutBook() {
         const accessToken = await getAccessTokenSilently();
-        const url = `http://localhost:8080/api/books/secure/checkout?bookId=${book?.id}`;
+        const url = `${process.env.REACT_APP_API}/books/secure/checkout?bookId=${book?.id}`;
         const requestOptions = {
             method: 'PUT',
             headers: {
@@ -235,7 +235,7 @@ export const BookCheckoutPage = () => {
         }
 
         const reviewRequestModel = new ReviewRequestModel(starInput, bookId, reviewDescription);
-        const url = `http://localhost:8080/api/reviews/secure`;
+        const url = `${process.env.REACT_APP_API}/reviews/secure`;
         const accessToken = await getAccessTokenSilently();
         const requestOptions = {
             method: 'POST',
@@ -253,54 +253,50 @@ export const BookCheckoutPage = () => {
     }
 
     return (
-        <div>
+        <div className='checkout-page'>
+            {/* Desktop */}
             <div className='container d-none d-lg-block'>
-                <div className='row mt-5'>
-                    <div className='col-sm-2 col-md-2'>
+                <div className='row g-5'>
+                    <div className='col-sm-2 col-md-2 d-flex justify-content-center'>
                         {book?.img ?
-                            <img src={book?.img} width='226' height='349' alt='Book' />
+                            <img src={book?.img} className='checkout-book-cover' width='226' height='349' alt='Book' />
                             :
-                            <img src={require('./../../Images/BooksImages/book-luv2code-1000.png')} width='226'
-                                height='349' alt='Book' />
+                            <img src={require('./../../Images/BooksImages/book-luv2code-1000.png')}
+                                className='checkout-book-cover' width='226' height='349' alt='Book' />
                         }
                     </div>
-                    <div className='col-4 col-md-4 container'>
-                        <div className='ml-2'>
-                            <h2>{book?.title}</h2>
-                            <h5 className='text-primary'>{book?.author}</h5>
-                            <p className='lead'>{book?.description}</p>
-                            <StarsReview rating={totalStars} size={32} />
-                        </div>
+                    <div className='col-4 col-md-4'>
+                        <h2>{book?.title}</h2>
+                        <p className='checkout-author'>{book?.author}</p>
+                        <p className='lead'>{book?.description}</p>
+                        <StarsReview rating={totalStars} size={28} />
                     </div>
-                    
-                    <CheckoutAndReviewBox book={book} mobile={false} currentLoansCount={currentLoansCount} 
-                        isAuthenticated={isAuthenticated} isCheckedOut={isCheckedOut} 
-                        checkoutBook={checkoutBook} isReviewLeft={isReviewLeft} submitReview={submitReview}/>
+                    <CheckoutAndReviewBox book={book} mobile={false} currentLoansCount={currentLoansCount}
+                        isAuthenticated={isAuthenticated} isCheckedOut={isCheckedOut}
+                        checkoutBook={checkoutBook} isReviewLeft={isReviewLeft} submitReview={submitReview} />
                 </div>
-                <hr />
+                <hr className='checkout-divider' />
                 <LatestReviews reviews={reviews} bookId={book?.id} mobile={false} />
             </div>
-            <div className='container d-lg-none mt-5'>
-                <div className='d-flex justify-content-center alighn-items-center'>
+
+            {/* Mobile */}
+            <div className='container d-lg-none'>
+                <div className='d-flex justify-content-center mb-4'>
                     {book?.img ?
-                        <img src={book?.img} width='226' height='349' alt='Book' />
+                        <img src={book?.img} className='checkout-book-cover' width='226' height='349' alt='Book' />
                         :
-                        <img src={require('./../../Images/BooksImages/book-luv2code-1000.png')} width='226'
-                            height='349' alt='Book' />
+                        <img src={require('./../../Images/BooksImages/book-luv2code-1000.png')}
+                            className='checkout-book-cover' width='226' height='349' alt='Book' />
                     }
                 </div>
-                <div className='mt-4'>
-                    <div className='ml-2'>
-                        <h2>{book?.title}</h2>
-                        <h5 className='text-primary'>{book?.author}</h5>
-                        <p className='lead'>{book?.description}</p>
-                        <StarsReview rating={totalStars} size={32} />
-                    </div>
-                </div>
-                <CheckoutAndReviewBox book={book} mobile={true} currentLoansCount={currentLoansCount} 
-                    isAuthenticated={isAuthenticated} isCheckedOut={isCheckedOut} 
-                    checkoutBook={checkoutBook} isReviewLeft={isReviewLeft} submitReview={submitReview}/>
-                <hr />
+                <h2>{book?.title}</h2>
+                <p className='checkout-author'>{book?.author}</p>
+                <p className='lead'>{book?.description}</p>
+                <StarsReview rating={totalStars} size={28} />
+                <CheckoutAndReviewBox book={book} mobile={true} currentLoansCount={currentLoansCount}
+                    isAuthenticated={isAuthenticated} isCheckedOut={isCheckedOut}
+                    checkoutBook={checkoutBook} isReviewLeft={isReviewLeft} submitReview={submitReview} />
+                <hr className='checkout-divider' />
                 <LatestReviews reviews={reviews} bookId={book?.id} mobile={true} />
             </div>
         </div>

@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import BookModel from '../../../models/BookModel';
 import { SpinnerLoading } from '../../Utils/SpinnerLoading';
@@ -14,28 +13,22 @@ export const ChangeQuantityOfBooks = () => {
     const [booksPerPage] = useState(5);
     const [totalAmountOfBooks, setTotalAmountOfBooks] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-
     const [bookDelete, setBookDelete] = useState(false);
 
     useEffect(() => {
         const fetchBooks = async () => {
-            const baseUrl: string = `http://localhost:8080/api/books?page=${currentPage - 1}&size=${booksPerPage}`;
-
+            const baseUrl: string = `${process.env.REACT_APP_API}/books?page=${currentPage - 1}&size=${booksPerPage}`;
             const response = await fetch(baseUrl);
-
             if (!response.ok) {
                 throw new Error('Something went wrong!');
             }
-
             const responseJson = await response.json();
-
             const responseData = responseJson._embedded.books;
 
             setTotalAmountOfBooks(responseJson.page.totalElements);
             setTotalPages(responseJson.page.totalPages);
 
             const loadedBooks: BookModel[] = [];
-
             for (const key in responseData) {
                 loadedBooks.push({
                     id: responseData[key].id,
@@ -48,7 +41,6 @@ export const ChangeQuantityOfBooks = () => {
                     img: responseData[key].img,
                 });
             }
-
             setBooks(loadedBooks);
             setIsLoading(false);
         };
@@ -64,13 +56,10 @@ export const ChangeQuantityOfBooks = () => {
         booksPerPage * currentPage : totalAmountOfBooks;
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
     const deleteBook = () => setBookDelete(!bookDelete);
 
     if (isLoading) {
-        return (
-            <SpinnerLoading/>
-        );
+        return <SpinnerLoading />;
     }
 
     if (httpError) {
@@ -82,23 +71,26 @@ export const ChangeQuantityOfBooks = () => {
     }
 
     return (
-        <div className='container mt-5'>
+        <div className='mt-4'>
             {totalAmountOfBooks > 0 ?
                 <>
-                    <div className='mt-3'>
-                        <h3>Number of results: ({totalAmountOfBooks})</h3>
+                    <div className='admin-inventory-meta'>
+                        <h3>{totalAmountOfBooks} Books in Library</h3>
+                        <p>Showing {indexOfFirstBook + 1}–{lastItem} of {totalAmountOfBooks} items</p>
                     </div>
-                    <p>
-                        {indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items: 
-                    </p>
                     {books.map(book => (
-                       <ChangeQuantityOfBook book={book} key={book.id} deleteBook={deleteBook}/>
+                        <ChangeQuantityOfBook book={book} key={book.id} deleteBook={deleteBook} />
                     ))}
                 </>
                 :
-                <h5>Add a book before changing quantity</h5>
+                <div className='empty-shelf mt-4'>
+                    <h3>No books in library</h3>
+                    <p className='text-muted'>Add a book first using the "Add New Book" tab.</p>
+                </div>
             }
-            {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate}/>}
+            {totalPages > 1 &&
+                <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />
+            }
         </div>
     );
 }

@@ -6,11 +6,9 @@ import { LoansModal } from './LoansModal';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const Loans = () => {
-    
-    const { isAuthenticated, getAccessTokenSilently} = useAuth0();
-    const [httpError, setHttpError] = useState(null);
 
-    // Current Loans
+    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const [httpError, setHttpError] = useState(null);
     const [shelfCurrentLoans, setShelfCurrentLoans] = useState<ShelfCurrentLoans[]>([]);
     const [isLoadingUserLoans, setIsLoadingUserLoans] = useState(true);
     const [checkout, setCheckout] = useState(false);
@@ -19,7 +17,7 @@ export const Loans = () => {
         const fetchUserCurrentLoans = async () => {
             if (isAuthenticated) {
                 const accessToken = await getAccessTokenSilently();
-                const url = `http://localhost:8080/api/books/secure/currentloans`;
+                const url = `${process.env.REACT_APP_API}/books/secure/currentloans`;
                 const requestOptions = {
                     method: 'GET',
                     headers: {
@@ -44,23 +42,19 @@ export const Loans = () => {
     }, [isAuthenticated, getAccessTokenSilently, checkout]);
 
     if (isLoadingUserLoans) {
-        return (
-            <SpinnerLoading/>
-        );
+        return <SpinnerLoading />;
     }
 
     if (httpError) {
         return (
             <div className='container m-5'>
-                <p>
-                    {httpError}
-                </p>
+                <p>{httpError}</p>
             </div>
         );
     }
 
     async function returnBook(bookId: number) {
-        const url = `http://localhost:8080/api/books/secure/return?bookId=${bookId}`;
+        const url = `${process.env.REACT_APP_API}/books/secure/return?bookId=${bookId}`;
         const accessToken = await getAccessTokenSilently();
         const requestOptions = {
             method: 'PUT',
@@ -77,7 +71,7 @@ export const Loans = () => {
     }
 
     async function renewLoan(bookId: number) {
-        const url = `http://localhost:8080/api/books/secure/renew/loan?bookId=${bookId}`;
+        const url = `${process.env.REACT_APP_API}/books/secure/renew/loan?bookId=${bookId}`;
         const accessToken = await getAccessTokenSilently();
         const requestOptions = {
             method: 'PUT',
@@ -86,162 +80,144 @@ export const Loans = () => {
                 'Content-Type': 'application/json'
             }
         };
-
         const returnResponse = await fetch(url, requestOptions);
         if (!returnResponse.ok) {
             throw new Error('Something went wrong!');
         }
         setCheckout(!checkout);
     }
-    
+
     return (
-        <div>
-            {/* Desktop */}
-            <div className='d-none d-lg-block mt-2'>
-                {shelfCurrentLoans.length > 0 ? 
+        <div className='mt-4'>
+            {shelfCurrentLoans.length > 0 ?
                 <>
-                    <h5>Current Loans: </h5>
+                    <h5 className='loans-header'>
+                        {shelfCurrentLoans.length} Active Loan{shelfCurrentLoans.length !== 1 ? 's' : ''}
+                    </h5>
 
-                    {shelfCurrentLoans.map(shelfCurrentLoan => (
-                        <div key={shelfCurrentLoan.book.id}>
-                            <div className='row mt-3 mb-3'>
-                                <div className='col-4 col-md-4 container'>
-                                    {shelfCurrentLoan.book?.img ? 
-                                        <img src={shelfCurrentLoan.book?.img} width='226' height='349' alt='Book'/>
-                                        :
-                                        <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')} 
-                                            width='226' height='349' alt='Book'/>
-                                    }
-                                </div>
-                                <div className='card col-3 col-md-3 container d-flex'>
-                                    <div className='card-body'>
-                                        <div className='mt-3'>
-                                            <h4>Loan Options</h4>
-                                            {shelfCurrentLoan.daysLeft > 0 && 
-                                                <p className='text-secondary'>
-                                                    Due in {shelfCurrentLoan.daysLeft} days.
-                                                </p>
-                                            }
-                                            {shelfCurrentLoan.daysLeft === 0 && 
-                                                <p className='text-success'>
-                                                    Due Today.
-                                                </p>
-                                            }
-                                            {shelfCurrentLoan.daysLeft < 0 && 
-                                                <p className='text-danger'>
-                                                    Past due by {shelfCurrentLoan.daysLeft} days.
-                                                </p>
-                                            }
-                                            <div className='list-group mt-3'>
-                                                <button className='list-group-item list-group-item-action' 
-                                                    aria-current='true' data-bs-toggle='modal' 
-                                                    data-bs-target={`#modal${shelfCurrentLoan.book.id}`}>
-                                                        Manage Loan
-                                                </button>
-                                                <Link to={'search'} className='list-group-item list-group-item-action'>
-                                                    Search more books?
-                                                </Link>
-                                            </div>
+                    {/* Desktop */}
+                    <div className='d-none d-lg-block'>
+                        {shelfCurrentLoans.map(shelfCurrentLoan => (
+                            <div key={shelfCurrentLoan.book.id}>
+                                <div className='loan-item'>
+                                    <div className='loan-book-img'>
+                                        {shelfCurrentLoan.book?.img ?
+                                            <img src={shelfCurrentLoan.book?.img} width='160' height='240' alt='Book' />
+                                            :
+                                            <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')}
+                                                width='160' height='240' alt='Book' />
+                                        }
+                                    </div>
+                                    <div className='loan-options-panel'>
+                                        <h4 className='loan-options-title'>Loan Options</h4>
+                                        {shelfCurrentLoan.daysLeft > 0 &&
+                                            <span className='loan-days-info loan-days-ok'>
+                                                Due in {shelfCurrentLoan.daysLeft} days
+                                            </span>
+                                        }
+                                        {shelfCurrentLoan.daysLeft === 0 &&
+                                            <span className='loan-days-info loan-days-today'>
+                                                Due Today
+                                            </span>
+                                        }
+                                        {shelfCurrentLoan.daysLeft < 0 &&
+                                            <span className='loan-days-info loan-days-late'>
+                                                Overdue by {Math.abs(shelfCurrentLoan.daysLeft)} days
+                                            </span>
+                                        }
+                                        <div className='list-group mt-3'>
+                                            <button
+                                                className='list-group-item list-group-item-action'
+                                                aria-current='true'
+                                                data-bs-toggle='modal'
+                                                data-bs-target={`#modal${shelfCurrentLoan.book.id}`}
+                                            >
+                                                Manage Loan
+                                            </button>
+                                            <Link to='search' className='list-group-item list-group-item-action'>
+                                                Search more books
+                                            </Link>
                                         </div>
-                                        <hr/>
-                                        <p className='mt-3'>
-                                            Help other find their adventure by reviewing your loan.
-                                        </p>
-                                        <Link className='btn btn-primary' to={`/checkout/${shelfCurrentLoan.book.id}`}>
-                                            Leave a review
-                                        </Link>
+                                        <div className='loan-review-section'>
+                                            <p>Help others find their next read — leave a review.</p>
+                                            <Link className='btn hero-btn-primary btn-sm'
+                                                to={`/checkout/${shelfCurrentLoan.book.id}`}>
+                                                Leave a Review
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
+                                <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={false}
+                                    returnBook={returnBook} renewLoan={renewLoan} />
                             </div>
-                            <hr/>
-                            <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={false} returnBook={returnBook} 
-                                renewLoan={renewLoan}/>
-                        </div>
-                    ))}
-                </> :
-                <>
-                    <h3 className='mt-3'>
-                        Currently no loans
-                    </h3>
-                    <Link className='btn btn-primary' to={`search`}>
-                        Search for a new book
-                    </Link>
-                </>
-            }
-            </div>
+                        ))}
+                    </div>
 
-            {/* Mobile */}
-            <div className='container d-lg-none mt-2'>
-                {shelfCurrentLoans.length > 0 ? 
-                <>
-                    <h5 className='mb-3'>Current Loans: </h5>
-
-                    {shelfCurrentLoans.map(shelfCurrentLoan => (
-                        <div key={shelfCurrentLoan.book.id}>
-                                <div className='d-flex justify-content-center align-items-center'>
-                                    {shelfCurrentLoan.book?.img ? 
-                                        <img src={shelfCurrentLoan.book?.img} width='226' height='349' alt='Book'/>
+                    {/* Mobile */}
+                    <div className='d-lg-none'>
+                        {shelfCurrentLoans.map(shelfCurrentLoan => (
+                            <div key={shelfCurrentLoan.book.id}>
+                                <div className='d-flex justify-content-center mb-3'>
+                                    {shelfCurrentLoan.book?.img ?
+                                        <img src={shelfCurrentLoan.book?.img} width='160' height='240' alt='Book'
+                                            style={{ borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }} />
                                         :
-                                        <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')} 
-                                            width='226' height='349' alt='Book'/>
+                                        <img src={require('./../../../Images/BooksImages/book-luv2code-1000.png')}
+                                            width='160' height='240' alt='Book'
+                                            style={{ borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }} />
                                     }
                                 </div>
-                                <div className='card d-flex mt-5 mb-3'>
-                                    <div className='card-body container'>
-                                        <div className='mt-3'>
-                                            <h4>Loan Options</h4>
-                                            {shelfCurrentLoan.daysLeft > 0 && 
-                                                <p className='text-secondary'>
-                                                    Due in {shelfCurrentLoan.daysLeft} days.
-                                                </p>
-                                            }
-                                            {shelfCurrentLoan.daysLeft === 0 && 
-                                                <p className='text-success'>
-                                                    Due Today.
-                                                </p>
-                                            }
-                                            {shelfCurrentLoan.daysLeft < 0 && 
-                                                <p className='text-danger'>
-                                                    Past due by {shelfCurrentLoan.daysLeft} days.
-                                                </p>
-                                            }
-                                            <div className='list-group mt-3'>
-                                                <button className='list-group-item list-group-item-action' 
-                                                    aria-current='true' data-bs-toggle='modal' 
-                                                    data-bs-target={`#mobilemodal${shelfCurrentLoan.book.id}`}>
-                                                        Manage Loan
-                                                </button>
-                                                <Link to={'search'} className='list-group-item list-group-item-action'>
-                                                    Search more books?
-                                                </Link>
-                                            </div>
-                                        </div>
-                                        <hr/>
-                                        <p className='mt-3'>
-                                            Help other find their adventure by reviewing your loan.
-                                        </p>
-                                        <Link className='btn btn-primary' to={`/checkout/${shelfCurrentLoan.book.id}`}>
-                                            Leave a review
+                                <div className='loan-options-panel mb-3'>
+                                    <h4 className='loan-options-title'>Loan Options</h4>
+                                    {shelfCurrentLoan.daysLeft > 0 &&
+                                        <span className='loan-days-info loan-days-ok'>
+                                            Due in {shelfCurrentLoan.daysLeft} days
+                                        </span>
+                                    }
+                                    {shelfCurrentLoan.daysLeft === 0 &&
+                                        <span className='loan-days-info loan-days-today'>Due Today</span>
+                                    }
+                                    {shelfCurrentLoan.daysLeft < 0 &&
+                                        <span className='loan-days-info loan-days-late'>
+                                            Overdue by {Math.abs(shelfCurrentLoan.daysLeft)} days
+                                        </span>
+                                    }
+                                    <div className='list-group mt-3'>
+                                        <button
+                                            className='list-group-item list-group-item-action'
+                                            aria-current='true'
+                                            data-bs-toggle='modal'
+                                            data-bs-target={`#mobilemodal${shelfCurrentLoan.book.id}`}
+                                        >
+                                            Manage Loan
+                                        </button>
+                                        <Link to='search' className='list-group-item list-group-item-action'>
+                                            Search more books
+                                        </Link>
+                                    </div>
+                                    <div className='loan-review-section'>
+                                        <p>Help others find their next read — leave a review.</p>
+                                        <Link className='btn hero-btn-primary btn-sm'
+                                            to={`/checkout/${shelfCurrentLoan.book.id}`}>
+                                            Leave a Review
                                         </Link>
                                     </div>
                                 </div>
-                            
-                            <hr/>
-                            <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={true} returnBook={returnBook} 
-                                renewLoan={renewLoan}/>
-                        </div>
-                    ))}
-                </> :
-                <>
-                    <h3 className='mt-3'>
-                        Currently no loans
-                    </h3>
-                    <Link className='btn btn-primary' to={`search`}>
-                        Search for a new book
-                    </Link>
+                                <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={true}
+                                    returnBook={returnBook} renewLoan={renewLoan} />
+                            </div>
+                        ))}
+                    </div>
                 </>
+                :
+                <div className='empty-shelf'>
+                    <h3>No active loans</h3>
+                    <p className='text-muted mb-4'>You have no books checked out right now.</p>
+                    <Link className='btn hero-btn-primary btn-lg' to='search'>
+                        Browse Books
+                    </Link>
+                </div>
             }
-            </div>
         </div>
     );
 }

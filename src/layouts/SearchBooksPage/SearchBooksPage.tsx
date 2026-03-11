@@ -19,7 +19,7 @@ export const SearchBooksPage = () => {
 
     useEffect(() => {
         const fetchBooks = async () => {
-            const baseUrl: string = "http://localhost:8080/api/books";
+            const baseUrl: string = `${process.env.REACT_APP_API}/books`;
 
             let url: string = '';
 
@@ -37,14 +37,12 @@ export const SearchBooksPage = () => {
             }
 
             const responseJson = await response.json();
-
             const responseData = responseJson._embedded.books;
 
             setTotalAmountOfBooks(responseJson.page.totalElements);
             setTotalPages(responseJson.page.totalPages);
 
             const loadedBooks: BookModel[] = [];
-
             for (const key in responseData) {
                 loadedBooks.push({
                     id: responseData[key].id,
@@ -69,9 +67,7 @@ export const SearchBooksPage = () => {
     }, [currentPage, searchUrl]);
 
     if (isLoading) {
-        return (
-            <SpinnerLoading />
-        )
+        return <SpinnerLoading />;
     }
 
     if (httpError) {
@@ -79,7 +75,7 @@ export const SearchBooksPage = () => {
             <div className='container m-5'>
                 <p>{httpError}</p>
             </div>
-        )
+        );
     }
 
     const searchHandleChange = () => {
@@ -95,9 +91,9 @@ export const SearchBooksPage = () => {
     const categoryField = (value: string) => {
         setCurrentPage(1);
         if (
-            value.toLowerCase() === 'fe' || 
-            value.toLowerCase() === 'be' || 
-            value.toLowerCase() === 'data' || 
+            value.toLowerCase() === 'fe' ||
+            value.toLowerCase() === 'be' ||
+            value.toLowerCase() === 'data' ||
             value.toLowerCase() === 'devops'
         ) {
             setCategorySelection(value);
@@ -117,78 +113,96 @@ export const SearchBooksPage = () => {
 
     return (
         <div>
-            <div className='container'>
-                <div>
-                    <div className='row mt-5'>
-                        <div className='col-6'>
-                            <div className='d-flex'>
-                                <input className='form-control me-2' type='search'
-                                    placeholder='Search' aria-labelledby='Search'
-                                    onChange={e => setSearch(e.target.value)} />
-                                <button className='btn btn-outline-success'
-                                    onClick={() => searchHandleChange()}>
-                                    Search
-                                </button>
+            {/* Page Banner */}
+            <div className='page-banner'>
+                <div className='container'>
+                    <div className='section-label'>Library</div>
+                    <h1 className='page-banner-title'>Search Books</h1>
+                    <p className='page-banner-subtitle'>
+                        Explore thousands of titles across all categories
+                    </p>
+                </div>
+            </div>
+
+            {/* Search Section */}
+            <div className='search-wrapper'>
+                <div className='container'>
+                    <div className='search-form-card'>
+                        <div className='row g-3 align-items-center'>
+                            <div className='col-lg-7'>
+                                <div className='d-flex gap-2'>
+                                    <input
+                                        className='form-control'
+                                        type='search'
+                                        placeholder='Search by title...'
+                                        aria-label='Search'
+                                        onChange={e => setSearch(e.target.value)}
+                                    />
+                                    <button
+                                        className='btn hero-btn-primary px-4'
+                                        onClick={() => searchHandleChange()}
+                                    >
+                                        Search
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div className='col-4'>
-                            <div className='dropdown'>
-                                <button className='btn btn-secondary dropdown-toggle' type='button'
-                                    id='dropdownMenuButton1' data-bs-toggle='dropdown'
-                                    aria-expanded='false'>
-                                    {categorySelection}
-                                </button>
-                                <ul className='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
-                                    <li onClick={() => categoryField('All')}>
-                                        <a className='dropdown-item' href='#'>
-                                            All
-                                        </a>
-                                    </li>
-                                    <li onClick={() => categoryField('FE')}>
-                                        <a className='dropdown-item' href='#'>
-                                            Front End
-                                        </a>
-                                    </li>
-                                    <li onClick={() => categoryField('BE')}>
-                                        <a className='dropdown-item' href='#'>
-                                            Back End
-                                        </a>
-                                    </li>
-                                    <li onClick={() => categoryField('Data')}>
-                                        <a className='dropdown-item' href='#'>
-                                            Data
-                                        </a>
-                                    </li>
-                                    <li onClick={() => categoryField('DevOps')}>
-                                        <a className='dropdown-item' href='#'>
-                                            DevOps
-                                        </a>
-                                    </li>
-                                </ul>
+                            <div className='col-lg-5'>
+                                <div className='dropdown'>
+                                    <button
+                                        className='btn btn-secondary dropdown-toggle w-100'
+                                        type='button'
+                                        id='dropdownMenuButton1'
+                                        data-bs-toggle='dropdown'
+                                        aria-expanded='false'
+                                    >
+                                        {categorySelection}
+                                    </button>
+                                    <ul className='dropdown-menu w-100' aria-labelledby='dropdownMenuButton1'>
+                                        <li onClick={() => categoryField('All')}>
+                                            <a className='dropdown-item' href='#'>All</a>
+                                        </li>
+                                        <li onClick={() => categoryField('FE')}>
+                                            <a className='dropdown-item' href='#'>Front End</a>
+                                        </li>
+                                        <li onClick={() => categoryField('BE')}>
+                                            <a className='dropdown-item' href='#'>Back End</a>
+                                        </li>
+                                        <li onClick={() => categoryField('Data')}>
+                                            <a className='dropdown-item' href='#'>Data</a>
+                                        </li>
+                                        <li onClick={() => categoryField('DevOps')}>
+                                            <a className='dropdown-item' href='#'>DevOps</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Results */}
                     {totalAmountOfBooks > 0 ?
                         <>
-                            <div className='mt-3'>
-                                <h5>Number of results: ({totalAmountOfBooks})</h5>
+                            <div className='search-results-meta'>
+                                <h5>{totalAmountOfBooks} Results Found</h5>
+                                <p>Showing {indexOfFirstBook + 1}–{lastItem} of {totalAmountOfBooks} items</p>
                             </div>
-                            <p>
-                                {indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items:
-                            </p>
                             {books.map(book => (
                                 <SearchBook book={book} key={book.id} />
                             ))}
                         </>
                         :
-                        <div className='m-5'>
-                            <h3>
-                                Can't find what you are looking for?
-                            </h3>
-                            <a type='button' className='btn main-color btn-md px-4 me-md-2 fw-bold text-white'
-                                href='#'>Library Services</a>
+                        <div className='empty-results'>
+                            <h3>No books found</h3>
+                            <p className='text-muted mb-4'>
+                                Try a different search term or browse by category.
+                            </p>
+                            <a className='btn hero-btn-primary btn-lg' href='#'
+                                onClick={e => { e.preventDefault(); setSearchUrl(''); }}>
+                                Clear Search
+                            </a>
                         </div>
                     }
+
                     {totalPages > 1 &&
                         <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />
                     }

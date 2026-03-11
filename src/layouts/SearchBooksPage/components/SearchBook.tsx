@@ -3,56 +3,33 @@ import BookModel from "../../../models/BookModel"
 
 export const SearchBook: React.FC<{ book: BookModel }> = (props) => {
     return (
-        <div className='card mt-3 shadow p-3 mb-3 bg-body rounded'>
-            <div className='row g-0'>
-                <div className='col-md-2'>
+        <div className='search-book-card'>
+            <div className='row g-0 align-items-center'>
+                <div className='col-auto'>
                     <div className='d-none d-lg-block'>
                         {props.book.img ?
-                            <img src={props.book.img}
-                                width='123'
-                                height='196'
-                                alt='Book'
-                            />
+                            <img src={props.book.img} width='100' height='160' alt='Book' />
                             :
                             <img src={require('../../../Images/BooksImages/book-luv2code-1000.png')}
-                                width='123'
-                                height='196'
-                                alt='Book'
-                            />
+                                width='100' height='160' alt='Book' />
                         }
                     </div>
-                    <div className='d-lg-none d-flex justify-content-center 
-                        align-items-center'>
+                    <div className='d-lg-none d-flex justify-content-center'>
                         {props.book.img ?
-                            <img src={props.book.img}
-                                width='123'
-                                height='196'
-                                alt='Book'
-                            />
+                            <img src={props.book.img} width='100' height='160' alt='Book' />
                             :
                             <img src={require('../../../Images/BooksImages/book-luv2code-1000.png')}
-                                width='123'
-                                height='196'
-                                alt='Book'
-                            />
+                                width='100' height='160' alt='Book' />
                         }
                     </div>
                 </div>
-                <div className='col-md-6'>
-                    <div className='card-body'>
-                        <h5 className='card-title'>
-                            {props.book.author}
-                        </h5>
-                        <h4>
-                            {props.book.title}
-                        </h4>
-                        <p className='card-text'>
-                            {props.book.description}
-                        </p>
-                    </div>
+                <div className='col px-4'>
+                    <p className='search-book-author'>{props.book.author}</p>
+                    <h5 className='search-book-title'>{props.book.title}</h5>
+                    <p className='search-book-desc'>{props.book.description}</p>
                 </div>
-                <div className='col-md-4 d-flex justify-content-center align-items-center'>
-                    <Link className='btn btn-md main-color text-white' to={`/checkout/${props.book.id}`}>
+                <div className='col-auto d-flex justify-content-center'>
+                    <Link className='btn hero-btn-primary' to={`/checkout/${props.book.id}`}>
                         View Details
                     </Link>
                 </div>

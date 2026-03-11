@@ -22,7 +22,7 @@ export const ReviewListPage = () => {
     useEffect(() => {
         const fetchBookReviewsData = async () => {
 
-            const reviewUrl: string = `http://localhost:8080/api/reviews/search/findByBookId?bookId=${bookId}&page=${currentPage - 1}&size=${reviewsPerPage}`;
+            const reviewUrl: string = `${process.env.REACT_APP_API}/reviews/search/findByBookId?bookId=${bookId}&page=${currentPage - 1}&size=${reviewsPerPage}`;
 
             const responseReviews = await fetch(reviewUrl);
 
@@ -84,20 +84,22 @@ export const ReviewListPage = () => {
 
 
     return (
-        <div className="container mt-5">
-            <div>
-                <h3>Comments: ({reviews.length})</h3>
+        <div>
+            <div className='page-banner'>
+                <div className='container'>
+                    <div className='section-label'>Reviews</div>
+                    <h1 className='page-banner-title'>Reader Reviews</h1>
+                    <p className='page-banner-subtitle'>
+                        {indexOfFirstReview + 1}–{lastItem} of {totalAmountOfReviews} reviews
+                    </p>
+                </div>
             </div>
-            <p>
-                {indexOfFirstReview + 1} to {lastItem} of {totalAmountOfReviews} items:
-            </p>
-            <div className="row">
+            <div className='container mt-5 mb-5'>
                 {reviews.map(review => (
                     <Review review={review} key={review.id} />
                 ))}
+                {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />}
             </div>
-
-            {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />}
         </div>
     );
 }

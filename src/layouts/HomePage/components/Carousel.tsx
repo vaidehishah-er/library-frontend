@@ -12,7 +12,7 @@ export const Carousel = () => {
 
     useEffect(() => {
         const fetchBooks = async () => {
-            const baseUrl: string = "http://localhost:8080/api/books";
+            const baseUrl: string = `${process.env.REACT_APP_API}/books`;
 
             const url: string = `${baseUrl}?page=0&size=9`;
 
@@ -65,57 +65,64 @@ export const Carousel = () => {
     }
 
     return (
-        <div className='container mt-5' style={{ height: 550 }}>
-            <div className='homepage-carousel-title'>
-                <h3>Find your next "I stayed up too late reading" book.</h3>
-            </div>
-            <div id='carouselExampleControls' className='carousel carousel-dark slide mt-5 
-                d-none d-lg-block' data-bs-interval='false'>
+        <div className='carousel-section'>
+            <div className='container'>
+                <div className='section-header'>
+                    <div className='section-label'>Featured Collection</div>
+                    <h2 className='section-title'>Our Top Picks</h2>
+                    <p className='carousel-subtitle'>Find your next "I stayed up too late reading" book.</p>
+                </div>
 
-                {/* Desktop */}
-                <div className='carousel-inner'>
-                    <div className='carousel-item active'>
-                        <div className='row d-flex justify-content-center align-items-center'>
-                            {books.slice(0, 3).map(book => (
-                                <ReturnBook book={book} key ={book.id} />
-                            ))}
+                {/* Desktop Carousel */}
+                <div id='carouselExampleControls' className='carousel slide d-none d-lg-block'
+                    data-bs-interval='false'>
+                    <div className='carousel-inner'>
+                        <div className='carousel-item active'>
+                            <div className='row d-flex justify-content-center align-items-center'>
+                                {books.slice(0, 3).map(book => (
+                                    <ReturnBook book={book} key={book.id} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className='carousel-item'>
+                            <div className='row d-flex justify-content-center align-items-center'>
+                                {books.slice(3, 6).map(book => (
+                                    <ReturnBook book={book} key={book.id} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className='carousel-item'>
+                            <div className='row d-flex justify-content-center align-items-center'>
+                                {books.slice(6, 9).map(book => (
+                                    <ReturnBook book={book} key={book.id} />
+                                ))}
+                            </div>
                         </div>
                     </div>
-                    <div className='carousel-item'>
-                        <div className='row d-flex justify-content-center align-items-center'>
-                            {books.slice(3, 6).map(book => (
-                                <ReturnBook book={book} key ={book.id} />
-                            ))}
-                        </div>
-                    </div>
-                    <div className='carousel-item'>
-                        <div className='row d-flex justify-content-center align-items-center'>
-                            {books.slice(6, 9).map(book => (
-                                <ReturnBook book={book} key ={book.id} />
-                            ))}
-                        </div>
+                    <button className='carousel-control-prev' type='button'
+                        data-bs-target='#carouselExampleControls' data-bs-slide='prev'>
+                        <span className='carousel-control-prev-icon' aria-hidden='true'></span>
+                        <span className='visually-hidden'>Previous</span>
+                    </button>
+                    <button className='carousel-control-next' type='button'
+                        data-bs-target='#carouselExampleControls' data-bs-slide='next'>
+                        <span className='carousel-control-next-icon' aria-hidden='true'></span>
+                        <span className='visually-hidden'>Next</span>
+                    </button>
+                </div>
+
+                {/* Mobile */}
+                <div className='d-lg-none mt-3'>
+                    <div className='row d-flex justify-content-center align-items-center'>
+                        <ReturnBook book={books[7]} key={books[7].id}/>
                     </div>
                 </div>
-                <button className='carousel-control-prev' type='button'
-                    data-bs-target='#carouselExampleControls' data-bs-slide='prev'>
-                    <span className='carousel-control-prev-icon' aria-hidden='true'></span>
-                    <span className='visually-hidden'>Previous</span>
-                </button>
-                <button className='carousel-control-next' type='button'
-                    data-bs-target='#carouselExampleControls' data-bs-slide='next'>
-                    <span className='carousel-control-next-icon' aria-hidden='true'></span>
-                    <span className='visually-hidden'>Next</span>
-                </button>
-            </div>
 
-            {/* Mobile */}
-            <div className='d-lg-none mt-3'>
-                <div className='row d-flex justify-content-center align-items-center'>
-                    <ReturnBook book={books[7]} key={books[7].id}/>
+                <div className='text-center mt-5'>
+                    <Link className='carousel-view-all' to='/search'>
+                        View All Books
+                    </Link>
                 </div>
-            </div>
-            <div className='homepage-carousel-title mt-3'>
-                <Link className='btn btn-outline-secondary btn-lg' to='/search'>View More</Link>
             </div>
         </div>
     );
