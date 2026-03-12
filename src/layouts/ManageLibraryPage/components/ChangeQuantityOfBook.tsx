@@ -8,6 +8,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
         const { getAccessTokenSilently } = useAuth0();
         const [quantity, setQuantity] = useState<number>(0);
         const [remaining, setRemaining] = useState<number>(0);
+        const [showConfirm, setShowConfirm] = useState(false);
 
         useEffect(() => {
             const fetchBookInState = () => {
@@ -118,13 +119,33 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
                                 <button className='btn admin-btn-decrease' onClick={decreaseQuantity}>
                                     − Remove
                                 </button>
-                                <button className='btn admin-btn-delete' onClick={deleteBook}>
+                                <button className='btn admin-btn-delete' onClick={() => setShowConfirm(true)}>
                                     Delete
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            {showConfirm && (
+                <div className='modal fade show d-block' style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                    <div className='modal-dialog modal-dialog-centered'>
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h5 className='modal-title'>Delete Book</h5>
+                                <button type='button' className='btn-close' onClick={() => setShowConfirm(false)}></button>
+                            </div>
+                            <div className='modal-body'>
+                                <p>Are you sure you want to delete <strong>"{props.book.title}"</strong>?</p>
+                                <p className='text-danger mb-0'>This action cannot be undone.</p>
+                            </div>
+                            <div className='modal-footer'>
+                                <button className='btn btn-secondary' onClick={() => setShowConfirm(false)}>Cancel</button>
+                                <button className='btn btn-danger' onClick={() => { setShowConfirm(false); deleteBook(); }}>Yes, Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             </div>
         );
     }

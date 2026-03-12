@@ -15,10 +15,6 @@ export const AddNewBook = () => {
     const [category, setCategory] = useState('Category');
     const [selectedImage, setSelectedImage] = useState<any>(null);
 
-    function categoryField(value: string) {
-        setCategory(value);
-    }
-
     async function base64ConversionForImages(e: any) {
         if (e.target.files[0]) {
             getBase64(e.target.files[0]);
@@ -103,26 +99,22 @@ export const AddNewBook = () => {
                     </div>
                     <div className='col-md-3'>
                         <label className='form-label admin-label'>Category</label>
-                        <button
-                            className='form-control btn btn-secondary dropdown-toggle text-start'
-                            type='button'
-                            id='dropdownMenuButton1'
-                            data-bs-toggle='dropdown'
-                            aria-expanded='false'
+                        <select
+                            className='form-control'
+                            value={category}
+                            onChange={e => setCategory(e.target.value)}
                         >
-                            {category}
-                        </button>
-                        <ul className='dropdown-menu w-100' aria-labelledby='dropdownMenuButton1'>
-                            <li><a onClick={() => categoryField('FE')} className='dropdown-item' href='#'>Front End</a></li>
-                            <li><a onClick={() => categoryField('BE')} className='dropdown-item' href='#'>Back End</a></li>
-                            <li><a onClick={() => categoryField('Data')} className='dropdown-item' href='#'>Data</a></li>
-                            <li><a onClick={() => categoryField('DevOps')} className='dropdown-item' href='#'>DevOps</a></li>
-                            <li><a onClick={() => categoryField('Fiction')} className='dropdown-item' href='#'>Fiction</a></li>
-                            <li><a onClick={() => categoryField('Science')} className='dropdown-item' href='#'>Science</a></li>
-                            <li><a onClick={() => categoryField('History')} className='dropdown-item' href='#'>History</a></li>
-                            <li><a onClick={() => categoryField('Biography')} className='dropdown-item' href='#'>Biography</a></li>
-                            <li><a onClick={() => categoryField('Biology')} className='dropdown-item' href='#'>Biology</a></li>
-                        </ul>
+                            <option value='Category' disabled>Category</option>
+                            <option value='FE'>Front End</option>
+                            <option value='BE'>Back End</option>
+                            <option value='Data'>Data</option>
+                            <option value='DevOps'>DevOps</option>
+                            <option value='Fiction'>Fiction</option>
+                            <option value='Science'>Science</option>
+                            <option value='History'>History</option>
+                            <option value='Biography'>Biography</option>
+                            <option value='Biology'>Biology</option>
+                        </select>
                     </div>
                 </div>
 

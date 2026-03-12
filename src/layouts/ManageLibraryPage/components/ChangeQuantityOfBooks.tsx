@@ -13,7 +13,7 @@ export const ChangeQuantityOfBooks = () => {
     const [booksPerPage] = useState(5);
     const [totalAmountOfBooks, setTotalAmountOfBooks] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [bookDelete, setBookDelete] = useState(false);
+    const [bookDelete, setBookDelete] = useState(0);
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -56,7 +56,7 @@ export const ChangeQuantityOfBooks = () => {
         booksPerPage * currentPage : totalAmountOfBooks;
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-    const deleteBook = () => setBookDelete(!bookDelete);
+    const deleteBook = () => setBookDelete(prev => prev + 1);
 
     if (isLoading) {
         return <SpinnerLoading />;
