@@ -2,11 +2,12 @@ import { NavLink } from "react-router-dom";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export const Navbar = () => {
 
-
-  const [roles, setRoles] = useState<string[] | null>(null); 
+  const { isDark, toggleTheme } = useTheme();
+  const [roles, setRoles] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(true); // Loading state to handle async data
   const { isAuthenticated, loginWithRedirect, logout, getIdTokenClaims } = useAuth0();
 
@@ -42,7 +43,7 @@ console.log("isAuthenticated: ", isAuthenticated);
   return (
     <nav className='navbar navbar-expand-lg navbar-dark main-color py-3'>
       <div className='container-fluid'>
-        <span className='navbar-brand'>&#128218; Love to Read</span>
+        <span className='navbar-brand'>Love to Read</span>
         <button className='navbar-toggler' type='button'
           data-bs-toggle='collapse' data-bs-target='#navbarNavDropdown'
           aria-controls='navbarNavDropdown' aria-expanded='false'
@@ -63,16 +64,31 @@ console.log("isAuthenticated: ", isAuthenticated);
                 <NavLink className='nav-link' to='/shelf'>Shelf</NavLink>
               </li>
             }
+            {isAuthenticated &&
+              <li className='nav-item'>
+                <NavLink className='nav-link' to='/payment'>Fees</NavLink>
+              </li>
+            }
             {isAuthenticated && roles?.includes('admin') &&
               <li className='nav-item'>
                 <NavLink className='nav-link' to='/admin'>Admin</NavLink>
               </li>
             }
           </ul>
-          <ul className='navbar-nav ms-auto'>
+          <ul className='navbar-nav ms-auto align-items-center gap-2'>
+            <li className='nav-item'>
+              <button
+                onClick={toggleTheme}
+                className='theme-toggle-btn'
+                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                title={isDark ? 'Light mode' : 'Dark mode'}
+              >
+                {isDark ? '☀️' : '🌙'}
+              </button>
+            </li>
             {!isAuthenticated ?
               <li className='nav-item m-1'>
-                <button  className='btn btn-outline-light' onClick={handleLogin}>Sign in</button>
+                <button className='btn btn-outline-light' onClick={handleLogin}>Sign in</button>
               </li>
               :
               <li>

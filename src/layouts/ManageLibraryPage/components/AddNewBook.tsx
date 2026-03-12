@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import AddBookRequest from '../../../models/AddBookRequest';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useToast } from '../../../context/ToastContext';
 
 export const AddNewBook = () => {
 
     const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const { showToast } = useToast();
 
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
@@ -12,9 +14,6 @@ export const AddNewBook = () => {
     const [copies, setCopies] = useState(0);
     const [category, setCategory] = useState('Category');
     const [selectedImage, setSelectedImage] = useState<any>(null);
-
-    const [displayWarning, setDisplayWarning] = useState(false);
-    const [displaySuccess, setDisplaySuccess] = useState(false);
 
     function categoryField(value: string) {
         setCategory(value);
@@ -62,26 +61,14 @@ export const AddNewBook = () => {
             setCopies(0);
             setCategory('Category');
             setSelectedImage(null);
-            setDisplayWarning(false);
-            setDisplaySuccess(true);
+            showToast(`"${title}" added to library!`, 'success');
         } else {
-            setDisplayWarning(true);
-            setDisplaySuccess(false);
+            showToast('Please fill out all fields before submitting.', 'warning');
         }
     }
 
     return (
         <div className='admin-form-card mt-4'>
-            {displaySuccess &&
-                <div className='alert alert-success' role='alert'>
-                    &#10003; Book added successfully
-                </div>
-            }
-            {displayWarning &&
-                <div className='alert alert-danger' role='alert'>
-                    All fields must be filled out
-                </div>
-            }
 
             <div className='admin-form-header'>
                 <div className='section-label'>New Entry</div>
@@ -130,6 +117,11 @@ export const AddNewBook = () => {
                             <li><a onClick={() => categoryField('BE')} className='dropdown-item' href='#'>Back End</a></li>
                             <li><a onClick={() => categoryField('Data')} className='dropdown-item' href='#'>Data</a></li>
                             <li><a onClick={() => categoryField('DevOps')} className='dropdown-item' href='#'>DevOps</a></li>
+                            <li><a onClick={() => categoryField('Fiction')} className='dropdown-item' href='#'>Fiction</a></li>
+                            <li><a onClick={() => categoryField('Science')} className='dropdown-item' href='#'>Science</a></li>
+                            <li><a onClick={() => categoryField('History')} className='dropdown-item' href='#'>History</a></li>
+                            <li><a onClick={() => categoryField('Biography')} className='dropdown-item' href='#'>Biography</a></li>
+                            <li><a onClick={() => categoryField('Biology')} className='dropdown-item' href='#'>Biology</a></li>
                         </ul>
                     </div>
                 </div>

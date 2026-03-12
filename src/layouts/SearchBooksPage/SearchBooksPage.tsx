@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BookModel from '../../models/BookModel';
 import { Pagination } from '../Utils/Pagination';
-import { SpinnerLoading } from '../Utils/SpinnerLoading';
+import { SkeletonSearchPage } from '../Utils/SkeletonBookCard';
 import { SearchBook } from './components/SearchBook';
 
 export const SearchBooksPage = () => {
@@ -67,7 +67,17 @@ export const SearchBooksPage = () => {
     }, [currentPage, searchUrl]);
 
     if (isLoading) {
-        return <SpinnerLoading />;
+        return (
+            <div>
+                <div className='page-banner'>
+                    <div className='container'>
+                        <div className='section-label'>Library</div>
+                        <h1 className='page-banner-title'>Search Books</h1>
+                    </div>
+                </div>
+                <div className='search-wrapper'><div className='container'><SkeletonSearchPage /></div></div>
+            </div>
+        );
     }
 
     if (httpError) {
@@ -90,17 +100,12 @@ export const SearchBooksPage = () => {
 
     const categoryField = (value: string) => {
         setCurrentPage(1);
-        if (
-            value.toLowerCase() === 'fe' ||
-            value.toLowerCase() === 'be' ||
-            value.toLowerCase() === 'data' ||
-            value.toLowerCase() === 'devops'
-        ) {
-            setCategorySelection(value);
-            setSearchUrl(`/search/findByCategory?category=${value}&page=<pageNumber>&size=${booksPerPage}`)
-        } else {
+        if (value === 'All') {
             setCategorySelection('All');
-            setSearchUrl(`?page=<pageNumber>&size=${booksPerPage}`)
+            setSearchUrl(`?page=<pageNumber>&size=${booksPerPage}`);
+        } else {
+            setCategorySelection(value);
+            setSearchUrl(`/search/findByCategory?category=${value}&page=<pageNumber>&size=${booksPerPage}`);
         }
     }
 
@@ -172,6 +177,21 @@ export const SearchBooksPage = () => {
                                         </li>
                                         <li onClick={() => categoryField('DevOps')}>
                                             <a className='dropdown-item' href='#'>DevOps</a>
+                                        </li>
+                                        <li onClick={() => categoryField('Fiction')}>
+                                            <a className='dropdown-item' href='#'>Fiction</a>
+                                        </li>
+                                        <li onClick={() => categoryField('Science')}>
+                                            <a className='dropdown-item' href='#'>Science</a>
+                                        </li>
+                                        <li onClick={() => categoryField('History')}>
+                                            <a className='dropdown-item' href='#'>History</a>
+                                        </li>
+                                        <li onClick={() => categoryField('Biography')}>
+                                            <a className='dropdown-item' href='#'>Biography</a>
+                                        </li>
+                                        <li onClick={() => categoryField('Biology')}>
+                                            <a className='dropdown-item' href='#'>Biology</a>
                                         </li>
                                     </ul>
                                 </div>

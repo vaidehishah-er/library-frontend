@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import './App.css';
+import './features.css';
 import { BookCheckoutPage } from './layouts/BookCheckoutPage/BookCheckoutPage';
 import { HomePage } from './layouts/HomePage/HomePage';
 import { Footer } from './layouts/NavbarAndFooter/Footer';
@@ -10,7 +11,10 @@ import { ReviewListPage } from './layouts/BookCheckoutPage/ReviewListPage/Review
 import { ShelfPage } from './layouts/ShelfPage/ShelfPage';
 import { MessagesPage } from './layouts/MessagesPage/MessagesPage';
 import { ManageLibraryPage } from './layouts/ManageLibraryPage/ManageLibraryPage';
+import { PaymentPage } from './layouts/PaymentPage/PaymentPage';
 import { auth0Config } from './lib/auth0Config';
+import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 
 import { Auth0Provider, withAuthenticationRequired} from '@auth0/auth0-react';
 import { LoginPage } from './Auth/LoginPage';
@@ -32,13 +36,13 @@ const Auth0ProviderWithHistory = ({ children }: { children: React.ReactNode }) =
         redirect_uri: auth0Config.redirectUri,
         audience: auth0Config.audience,
         scope: auth0Config.scope,
-      }} 
+      }}
        onRedirectCallback={onRedirectCallback}
     >
       {children}
       {/* console.log(auth0Config.domain); */}
     </Auth0Provider>
-    
+
   );
 };
 
@@ -49,34 +53,39 @@ const SecureRoute = ({ component, path, ...args }: { component: React.ComponentT
 export const App = () => {
 
   return (
-    <div className='d-flex flex-column min-vh-100'>
-      <Auth0ProviderWithHistory>
-      <Navbar />
-      <div className='flex-grow-1'>
-        <Switch>
-          <Route path='/' exact>
-            <Redirect to='/home' />
-          </Route>
-          <Route path='/home'>
-            <HomePage />
-          </Route>
-          <Route path='/search'>
-            <SearchBooksPage />
-          </Route>
-          <Route path='/reviewlist/:bookId'>
-            <ReviewListPage/>
-          </Route>
-          <Route path='/checkout/:bookId'>
-            <BookCheckoutPage/>
-          </Route>
-          <Route path='/login' render={() => <LoginPage />} />
-          <SecureRoute path='/shelf' component={ShelfPage} />
-          <SecureRoute path='/messages' component={MessagesPage} />
-          <SecureRoute path='/admin' component={ManageLibraryPage} />
-        </Switch>
-      </div>
-      <Footer />
-      </Auth0ProviderWithHistory>
-    </div>
+    <ThemeProvider>
+      <ToastProvider>
+        <div className='d-flex flex-column min-vh-100'>
+          <Auth0ProviderWithHistory>
+            <Navbar />
+            <div className='flex-grow-1'>
+              <Switch>
+                <Route path='/' exact>
+                  <Redirect to='/home' />
+                </Route>
+                <Route path='/home'>
+                  <HomePage />
+                </Route>
+                <Route path='/search'>
+                  <SearchBooksPage />
+                </Route>
+                <Route path='/reviewlist/:bookId'>
+                  <ReviewListPage/>
+                </Route>
+                <Route path='/checkout/:bookId'>
+                  <BookCheckoutPage/>
+                </Route>
+                <Route path='/login' render={() => <LoginPage />} />
+                <SecureRoute path='/shelf' component={ShelfPage} />
+                <SecureRoute path='/messages' component={MessagesPage} />
+                <SecureRoute path='/admin' component={ManageLibraryPage} />
+                <SecureRoute path='/payment' component={PaymentPage} />
+              </Switch>
+            </div>
+            <Footer />
+          </Auth0ProviderWithHistory>
+        </div>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

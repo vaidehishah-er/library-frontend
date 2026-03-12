@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { AddNewBook } from './components/AddNewBook';
 import { AdminMessages } from './components/AdminMessages';
 import { ChangeQuantityOfBooks } from './components/ChangeQuantityOfBooks';
+import { Analytics } from './components/Analytics';
 import { useAuth0 } from '@auth0/auth0-react';
 import { SpinnerLoading } from '../Utils/SpinnerLoading';
 
@@ -14,6 +15,7 @@ export const ManageLibraryPage = () => {
 
     const [changeQuantityOfBooksClick, setChangeQuantityOfBooksClick] = useState(false);
     const [messagesClick, setMessagesClick] = useState(false);
+    const [analyticsClick, setAnalyticsClick] = useState(false);
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -28,16 +30,25 @@ export const ManageLibraryPage = () => {
     function addBookClickFunction() {
         setChangeQuantityOfBooksClick(false);
         setMessagesClick(false);
+        setAnalyticsClick(false);
     }
 
     function changeQuantityOfBooksClickFunction() {
         setChangeQuantityOfBooksClick(true);
         setMessagesClick(false);
+        setAnalyticsClick(false);
     }
 
     function messagesClickFunction() {
         setChangeQuantityOfBooksClick(false);
         setMessagesClick(true);
+        setAnalyticsClick(false);
+    }
+
+    function analyticsClickFunction() {
+        setChangeQuantityOfBooksClick(false);
+        setMessagesClick(false);
+        setAnalyticsClick(true);
     }
 
     if (loading) {
@@ -104,6 +115,19 @@ export const ManageLibraryPage = () => {
                             >
                                 Messages
                             </button>
+                            <button
+                                onClick={analyticsClickFunction}
+                                className='nav-link'
+                                id='nav-analytics-tab'
+                                data-bs-toggle='tab'
+                                data-bs-target='#nav-analytics'
+                                type='button'
+                                role='tab'
+                                aria-controls='nav-analytics'
+                                aria-selected='false'
+                            >
+                                Analytics
+                            </button>
                         </div>
                     </nav>
                     <div className='tab-content' id='nav-tabContent'>
@@ -118,6 +142,10 @@ export const ManageLibraryPage = () => {
                         <div className='tab-pane fade' id='nav-messages' role='tabpanel'
                             aria-labelledby='nav-messages-tab'>
                             {messagesClick ? <AdminMessages /> : <></>}
+                        </div>
+                        <div className='tab-pane fade' id='nav-analytics' role='tabpanel'
+                            aria-labelledby='nav-analytics-tab'>
+                            {analyticsClick ? <Analytics /> : <></>}
                         </div>
                     </div>
                 </div>

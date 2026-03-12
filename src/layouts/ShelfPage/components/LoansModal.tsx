@@ -1,7 +1,22 @@
+import { useHistory } from 'react-router-dom';
 import ShelfCurrentLoans from "../../../models/ShelfCurrentLoans";
 
 export const LoansModal: React.FC<{ shelfCurrentLoan: ShelfCurrentLoans, mobile: boolean, returnBook: any,
     renewLoan: any }> = (props) => {
+    const history = useHistory();
+
+    const handlePayFees = () => {
+        // Close the modal then navigate to payment page
+        const modalEl = document.getElementById(
+            props.mobile ? `mobilemodal${props.shelfCurrentLoan.book.id}` : `modal${props.shelfCurrentLoan.book.id}`
+        );
+        if (modalEl) {
+            const modal = (window as any).bootstrap.Modal.getInstance(modalEl);
+            modal?.hide();
+        }
+        history.push('/payment');
+    };
+
     return (
         <div className='modal fade' id={props.mobile ? `mobilemodal${props.shelfCurrentLoan.book.id}` : 
             `modal${props.shelfCurrentLoan.book.id}`} data-bs-backdrop='static' data-bs-keyboard='false' 
@@ -44,10 +59,18 @@ export const LoansModal: React.FC<{ shelfCurrentLoan: ShelfCurrentLoans, mobile:
                                              Due Today.
                                         </p>
                                     }
-                                    {props.shelfCurrentLoan.daysLeft < 0 && 
-                                        <p className='text-danger'>
-                                            Past due by {props.shelfCurrentLoan.daysLeft} days.
-                                        </p>
+                                    {props.shelfCurrentLoan.daysLeft < 0 &&
+                                        <div>
+                                            <p className='text-danger'>
+                                                Past due by {Math.abs(props.shelfCurrentLoan.daysLeft)} days.
+                                            </p>
+                                            <button
+                                                onClick={handlePayFees}
+                                                className='btn btn-danger btn-sm w-100 mb-2'
+                                            >
+                                                Pay Late Fees — ₹{(Math.abs(props.shelfCurrentLoan.daysLeft) * 91).toFixed(2)}
+                                            </button>
+                                        </div>
                                     }
                                     <div className='list-group mt-3'>
                                         <button onClick={() => props.returnBook(props.shelfCurrentLoan.book.id)} 

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { HistoryPage } from "./components/HistoryPage";
 import { Loans } from "./components/Loans";
+import { ReadingProgress } from "./components/ReadingProgress";
 
 export const ShelfPage = () => {
 
     const [historyClick, setHistoryClick] = useState(false);
+    const [progressClick, setProgressClick] = useState(false);
 
     return (
         <div>
@@ -24,7 +26,7 @@ export const ShelfPage = () => {
                     <nav>
                         <div className='shelf-nav nav nav-tabs' id='nav-tab' role='tablist'>
                             <button
-                                onClick={() => setHistoryClick(false)}
+                                onClick={() => { setHistoryClick(false); setProgressClick(false); }}
                                 className='nav-link active'
                                 id='nav-loans-tab'
                                 data-bs-toggle='tab'
@@ -37,7 +39,7 @@ export const ShelfPage = () => {
                                 Current Loans
                             </button>
                             <button
-                                onClick={() => setHistoryClick(true)}
+                                onClick={() => { setHistoryClick(true); setProgressClick(false); }}
                                 className='nav-link'
                                 id='nav-history-tab'
                                 data-bs-toggle='tab'
@@ -49,6 +51,19 @@ export const ShelfPage = () => {
                             >
                                 Reading History
                             </button>
+                            <button
+                                onClick={() => { setProgressClick(true); setHistoryClick(false); }}
+                                className='nav-link'
+                                id='nav-progress-tab'
+                                data-bs-toggle='tab'
+                                data-bs-target='#nav-progress'
+                                type='button'
+                                role='tab'
+                                aria-controls='nav-progress'
+                                aria-selected='false'
+                            >
+                                Reading Progress
+                            </button>
                         </div>
                     </nav>
                     <div className='tab-content' id='nav-tabContent'>
@@ -59,6 +74,10 @@ export const ShelfPage = () => {
                         <div className='tab-pane fade' id='nav-history' role='tabpanel'
                             aria-labelledby='nav-history-tab'>
                             {historyClick ? <HistoryPage /> : <></>}
+                        </div>
+                        <div className='tab-pane fade' id='nav-progress' role='tabpanel'
+                            aria-labelledby='nav-progress-tab'>
+                            {progressClick ? <ReadingProgress /> : <></>}
                         </div>
                     </div>
                 </div>
